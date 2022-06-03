@@ -41,7 +41,7 @@ def should_reply(data):
 
 # This should be short since we only got 2 games left lol
 def determine_response(message):
-	appropriate_responses = [
+	next_game_responses = [
 		"hey milo when's the next game",
 		"hey milo when's our next game",
 		"hey milo whens the next game",
@@ -49,9 +49,14 @@ def determine_response(message):
 		"hey milo when is the next game",
 		"hey milo next game"
 	]
-	if message in appropriate_responses:
+	love_me_responses = [
+		"love me"
+	]
+	if message in next_game_responses:
 		return find_next_game(datetime.now(), game_times).strftime("The next game is on %B %dth at %I:%M %p")
-
+	if message in love_me_responses:
+		return "it's ok i love you"
+		
 @app.route('/', methods=['POST'])
 def webhook():
   
