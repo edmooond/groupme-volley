@@ -31,9 +31,9 @@ def webhook():
 	data = request.get_json()
 
 	# We don't want to reply to ourselves!
-		if should_reply(data):
-			msg = data["name"]
-			send_message(msg)
+	if should_reply(data):
+		msg = data["name"]
+		send_message(msg)
 
 	return "OK", 200
 
