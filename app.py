@@ -48,7 +48,7 @@ def determine_response(message):
 		"hey milo next game"
 	]
 	if message in appropriate_responses:
-		return find_next_game(datetime.now(), game_times)
+		return find_next_game(datetime.now(), game_times).strftime("The next game is on %B %dth at %I:%M %p")
 
 @app.route('/', methods=['POST'])
 def webhook():
