@@ -1,11 +1,26 @@
 import os
 import json
-import logging
+import requests
+from datetime import datetime
 
-import requests, urllib
 from flask import Flask, request
 
 app = Flask(__name__)
+
+
+game_times = [
+    datetime(2022, 6, 7, 21, 15, 0),
+    datetime(2022, 6, 14, 21, 15, 0),
+]
+
+def find_next_game(today, game_times):
+    next_game = datetime(9999, 9, 9)
+    candidates = []
+    for game in game_times:
+        if game > today:
+            if game - today < next_game - today:
+                next_game = game
+    return next_game
 
 def send_message(msg):
 	url  = "https://api.groupme.com/v3/bots/post"
@@ -24,6 +39,16 @@ def should_reply(data):
 	else:
 		return False
 
+# This should be short since we only got 2 games left lol
+def determine_response(message):
+	appropriate_responses = [
+		"hey milo when's the next game",
+		"hey milo whens the next game",
+		"hey milo when is the next game",
+		"hey milo next game"
+	]
+	if message in appropriate_responses:
+		return find_next_game(datetime.now(), game_times)
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -32,8 +57,8 @@ def webhook():
 
 	# We don't want to reply to ourselves!
 	if should_reply(data):
-		msg = data["name"]
-		send_message(msg)
+		response = determine_response(data["text"])
+		send_message(response)
 
 	return "OK", 200
 
