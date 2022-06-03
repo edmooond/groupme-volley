@@ -43,7 +43,9 @@ def should_reply(data):
 def determine_response(message):
 	appropriate_responses = [
 		"hey milo when's the next game",
+		"hey milo when's our next game",
 		"hey milo whens the next game",
+		"hey milo whens our next game",
 		"hey milo when is the next game",
 		"hey milo next game"
 	]
