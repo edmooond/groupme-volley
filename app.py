@@ -15,7 +15,6 @@ game_times = [
 
 def find_next_game(today, game_times):
     next_game = datetime(9999, 9, 9)
-    candidates = []
     for game in game_times:
         if game > today:
             if game - today < next_game - today:
@@ -49,14 +48,11 @@ def determine_response(message):
 		"hey milo when is the next game",
 		"hey milo next game"
 	]
-	love_me_responses = [
-		"love me"
-	]
+
 	if message in next_game_responses:
 		return find_next_game(datetime.now(), game_times).strftime("The next game is on %B %dth at %I:%M %p")
-	if message in love_me_responses:
-		return "it's ok i love you"
-		
+
+
 @app.route('/', methods=['POST'])
 def webhook():
   
@@ -64,7 +60,7 @@ def webhook():
 
 	# We don't want to reply to ourselves!
 	if should_reply(data):
-		response = determine_response(data["text"])
+		response = determine_response(data["text"].lower())
 		send_message(response)
 
 	return "OK", 200
