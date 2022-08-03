@@ -176,7 +176,6 @@ def determine_response(message):
 
     next_game_questions = add_question_mark(next_game_questions)
     current_season_questions = add_question_mark(current_season_questions)
-    current_season_end_questions = add_question_mark(current_season_end_questios)
     standings_questions = add_question_mark(standings_questions)
 
     if message in next_game_questions:
