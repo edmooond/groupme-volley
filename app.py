@@ -109,23 +109,22 @@ def add_question_mark(question_array):
 
 
 def get_command_questions(questions_map):
-	reply = "I know the following commands: \n"
-	for question in questions_map:
-		reply = reply + questions_map[question][0] + "\n"
-	return reply
+    reply = "I know the following commands: \n"
+    for question in questions_map:
+        reply = reply + questions_map[question][0] + "\n"
+    return reply
 
 
 def get_all_command_questions(questions_map):
-	reply = "Get ready for a wall of text, here's all the commands I know: \n"
-	for question in questions_map:
-		for each_question in questions_map[question]:
-			reply = reply + each_question + "\n"
-		reply = reply + "----------------------\n"
-	return reply
+    reply = "Get ready for a wall of text, here's all the commands I know: \n"
+    for question in questions_map:
+        for each_question in questions_map[question]:
+            reply = reply + each_question + "\n"
+        reply = reply + "----------------------\n"
+    return reply
 
 
 def determine_response(message):
-
     next_game_questions = [
         "hey milo when is the next game",
         "hey milo when's the next game",
@@ -140,7 +139,7 @@ def determine_response(message):
     ]
 
     current_season_questions = [
-		"hey milo whats the current season",
+        "hey milo whats the current season",
         "hey milo what's the current season",
         "hey milo what’s the current season",
         "hey milo what is the current season",
@@ -191,29 +190,25 @@ def determine_response(message):
         "hey milo what’s our ranking",
     ]
 
+    command_questions = [
+        "hey milo what commands do you know",
+    ]
 
-	command_questions = [
-		"hey milo what commands do you know",
-	]
+    all_command_questions = [
+        "hey milo what are ALL the commands you know",
+    ]
 
+    questions_map = {
+        "next_game_questions": next_game_questions,
+        "current_season_questions": current_season_questions,
+        "standings_questions": standings_questions,
+        "command_questions": command_questions,
+        "next_season_start_questions": next_season_start_questions,
+        "all_command_questions": all_command_questions
+    }
 
-	all_command_questions = [
-		"hey milo what are ALL the commands you know",
-	]
-
-	questions_map = {
-		"next_game_questions": next_game_questions,
-		"current_season_questions": current_season_questions,
-		"standings_questions": standings_questions,
-		"command_questions": command_questions,
-		"next_season_start_questions": next_season_start_questions,
-		"all_command_questions": all_command_questions
-	}
-
-
-	for question in questions_map:
-		questions_map[question] = add_question_mark(questions_map[question])
-
+    for question in questions_map:
+        questions_map[question] = add_question_mark(questions_map[question])
 
     if message in next_game_questions:
         matches = get_matches()
@@ -228,11 +223,12 @@ def determine_response(message):
     if message in standings_questions:
         return get_standings()
 
-	if message in command_questions:
-		return get_command_questions()
-	
-	if message in all_command_questions:
-		return get_all_command_questions()
+    if message in command_questions:
+        return get_command_questions(questions_map)
+
+    if message in all_command_questions:
+        return get_all_command_questions(questions_map)
+
 
 @app.route('/', methods=['POST'])
 def webhook():
