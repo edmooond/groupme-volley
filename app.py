@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, request
 
@@ -57,7 +57,7 @@ def get_matches():
         if item["homeTeam"] and item["awayTeam"]:  # lazy null check
             if item["homeTeam"]["name"] == team_name or item["awayTeam"]["name"] == team_name:
                 dt_format = "%Y-%m-%d %H:%M:%S"
-                matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format))
+                matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format) - timedelta(hours=4)) # Matches are 4 hours ahead for whatever reason
     return matches
 
 
@@ -143,17 +143,6 @@ def determine_response(message):
         "hey milo what's the current season",
         "hey milo what’s the current season",
         "hey milo what is the current season",
-    ]
-
-    current_season_end_questions = [
-        # I don't think we need this actually cause the current season response includes it
-        "hey milo when's the current season end",
-        "hey milo when’s the current season end",
-        "hey milo whens the current season end",
-        "hey milo when does the current season end",
-        "hey milo when does our current season end",
-        "hey milo when's our current season end",
-        "hey milo when’s our current season end",
     ]
 
     next_season_start_questions = [
