@@ -12,6 +12,7 @@ game_times = [
     datetime(2022, 6, 14, 21, 15, 0),
 ]
 
+# These things can probably go into env variables later
 division_uid = "c5b3cca3-0eb7-4ba3-a218-e46cb7da2974"  # this is found after selecting day, league, and court
 team_name = "Dollar Store Athletes"
 
@@ -204,7 +205,7 @@ def determine_response(message):
     if message in questions_map["next_game_questions"]:
         matches = get_matches()
         next_match = get_next_match(matches)
-        link = "https://flannagans.league.ninja/leagues/division/c5b3cca3-0eb7-4ba3-a218-e46cb7da2974/schedule"
+        link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
         reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
         if not next_match == datetime(9999, 9, 9):
             reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
