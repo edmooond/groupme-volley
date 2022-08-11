@@ -127,15 +127,16 @@ def get_all_command_questions(questions_map):
 
 def determine_response(message):
     next_game_questions = [
+        "hey milo whens the next game",
         "hey milo when is the next game",
         "hey milo when's the next game",
         "hey milo when’s the next game",
-        # for some reason amber's phone is broken and sends this weird apostrophe instead
+
+        "hey milo whens the next game",
         "hey milo when's our next game",
         "hey milo when’s our next game",
-        # for some reason amber's phone is broken and sends this weird apostrophe instead
-        "hey milo whens the next game",
-        "hey milo whens our next game",
+        "hey milo when is our next game",
+
         "hey milo next game",
     ]
 
@@ -200,7 +201,7 @@ def determine_response(message):
     for question in questions_map:
         questions_map[question] = add_question_mark(questions_map[question])
 
-    if message in next_game_questions:
+    if message in questions_map["next_game_questions"]:
         matches = get_matches()
         next_match = get_next_match(matches)
         link = "https://flannagans.league.ninja/leagues/division/c5b3cca3-0eb7-4ba3-a218-e46cb7da2974/"
@@ -209,19 +210,19 @@ def determine_response(message):
             reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
         return reply
 
-    if message in current_season_questions:
+    if message in questions_map["current_season_questions"]:
         return get_current_season()
 
-    if message in next_season_start_questions:
+    if message in questions_map["next_season_start_questions"]:
         return get_next_season()
 
-    if message in standings_questions:
+    if message in questions_map["standings_questions"]:
         return get_standings()
 
-    if message in command_questions:
+    if message in questions_map["command_questions"]:
         return get_command_questions(questions_map)
 
-    if message in all_command_questions:
+    if message in questions_map["all_command_questions"]:
         return get_all_command_questions(questions_map)
 
 
