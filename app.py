@@ -12,9 +12,8 @@ game_times = [
     datetime(2022, 6, 14, 21, 15, 0),
 ]
 
-# These things can probably go into env variables later
-division_uid = "c5b3cca3-0eb7-4ba3-a218-e46cb7da2974"  # this is found after selecting day, league, and court
-team_name = "Dollar Store Athletes"
+division_uid = os.getenv("DIVISION_UID")  # this is found after selecting day, league, and court
+team_name = os.getenv("TEAM_NAME")
 
 
 def get_current_season():
