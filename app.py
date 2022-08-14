@@ -92,7 +92,6 @@ def send_message(msg):
 
 def should_reply(data):
     if len(data["text"]) < 8:  # the length of "hey milo"
-        print("too short")
         return False
     message_start = data["text"][:8].lower()
     if data["name"] != "Milo" and message_start == "hey milo":
