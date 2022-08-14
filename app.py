@@ -188,13 +188,25 @@ def determine_response(message):
         "hey milo what are ALL the commands you know",
     ]
 
+    wake_up_questions = [ # I guess these aren't really questions
+        "hey milo wake up",
+        "hey milo wake up!",
+        "hey milo, wake up",
+        "hey milo, wake up!",
+        "hey milo are you awake",
+        "hey milo, are you awake",
+        "hey milo are you up",
+        "hey milo, are you up",
+    ]
+
     questions_map = {
         "next_game_questions": next_game_questions,
         "current_season_questions": current_season_questions,
         "standings_questions": standings_questions,
         "command_questions": command_questions,
         "next_season_start_questions": next_season_start_questions,
-        "all_command_questions": all_command_questions
+        "all_command_questions": all_command_questions,
+        "wake_up_questions": wake_up_questions
     }
 
     for question in questions_map:
