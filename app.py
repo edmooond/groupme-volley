@@ -27,7 +27,8 @@ team_info = {
         "team_name": os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES")
-    }
+    },
+    # Need to add sunday and wednesday if they ever get a groupme going
 }
 
 def get_current_season():
@@ -101,8 +102,7 @@ def send_message(msg, bot_id):
         "bot_id": bot_id,
         "text": msg
     }
-    resp = requests.post(url, data=json.dumps(data))
-
+    requests.post(url, data=json.dumps(data))
 
 def should_reply(data):
     if len(data["text"]) < 8:  # the length of "hey milo"
@@ -210,7 +210,7 @@ def determine_response(message, team_name, division_uid):
         "hey milo what are ALL the commands you know",
     ]
 
-    wake_up_questions = [ # I guess these aren't really questions, haven't found a use yet
+    wake_up_questions = [ # I guess these aren't really questions, haven't found a use yet so I haven't added it to the questions map
         "hey milo wake up",
         "hey milo wake up!",
         "hey milo, wake up",
@@ -228,7 +228,7 @@ def determine_response(message, team_name, division_uid):
         "command_questions": command_questions,
         "next_season_start_questions": next_season_start_questions,
         "all_command_questions": all_command_questions,
-        "wake_up_questions": wake_up_questions
+        # "wake_up_questions": wake_up_questions,
     }
 
     for question in questions_map:
@@ -258,6 +258,8 @@ def determine_response(message, team_name, division_uid):
     if message in questions_map["all_command_questions"]:
         return get_all_command_questions(questions_map)
 
+    return "idk that command yo" # for if all those "if" statements don't go through
+
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -267,7 +269,7 @@ def webhook():
         division_uid = team_info[data["group_id"]]["division_uid"]
         bot_id = team_info[data["group_id"]]["bot_id"]
         team_name = team_info[data["group_id"]]["team_name"]
-        response = determine_response(data["text"].lower(), team_name, division_uid) # Needs group_id to figure out division
+        response = determine_response(data["text"].lower(), team_name, division_uid)
         send_message(response, bot_id)
 
     return "OK", 200
