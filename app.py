@@ -7,10 +7,6 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-game_times = [
-    datetime(2022, 6, 7, 21, 15, 0),
-    datetime(2022, 6, 14, 21, 15, 0),
-]
 
 division_uid = os.getenv("DIVISION_UID")  # this is found after selecting day, league, and court
 team_name = os.getenv("TEAM_NAME")
@@ -240,7 +236,7 @@ def determine_response(message):
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
-
+    print(data)
     # We don't want to reply to ourselves!
     if should_reply(data):
         response = determine_response(data["text"].lower())
