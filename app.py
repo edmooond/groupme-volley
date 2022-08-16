@@ -142,14 +142,16 @@ def determine_response(message, team_name, division_uid):
 
     next_game_questions = [
         "hey milo whens the next game",
-        "hey milo when is the next game",
-        "hey milo when's the next game",
-        "hey milo when’s the next game",
+        "hey milo whens our next game",
 
-        "hey milo whens the next game",
-        "hey milo when's our next game",
+        "hey milo when’s the next game",
         "hey milo when’s our next game",
+
+        "hey milo when's the next game",
+        "hey milo when's our next game",
+
         "hey milo when is our next game",
+        "hey milo when is the next game",
 
         "hey milo next game",
     ]
@@ -163,12 +165,15 @@ def determine_response(message, team_name, division_uid):
 
     next_season_start_questions = [
         "hey milo whens the next season start",
-        "hey milo when’s the next season start",
-        "hey milo when's the next season start",
-        "hey milo when does the next season start",
-        "hey milo what's the next season",
         "hey milo whats the next season",
+
+        "hey milo when’s the next season start",
         "hey milo what’s the next season",
+
+        "hey milo when's the next season start",
+        "hey milo what's the next season",
+
+        "hey milo when does the next season start",
         "hey milo what is the next season",
     ]
 
@@ -197,13 +202,15 @@ def determine_response(message, team_name, division_uid):
 
     command_questions = [
         "hey milo what commands do you know",
+        "hey milo help",
+        "hey milo, help",
     ]
 
     all_command_questions = [
         "hey milo what are ALL the commands you know",
     ]
 
-    wake_up_questions = [ # I guess these aren't really questions
+    wake_up_questions = [ # I guess these aren't really questions, haven't found a use yet
         "hey milo wake up",
         "hey milo wake up!",
         "hey milo, wake up",
