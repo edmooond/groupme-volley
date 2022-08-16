@@ -7,10 +7,18 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-
-division_uid = os.getenv("DIVISION_UID")  # this is found after selecting day, league, and court
-team_name = os.getenv("TEAM_NAME")
-
+team_info = {
+    "87305856" : { # apitest group
+        "team_name" : os.getenv("MONDAY_TEAM_NAME"),
+        "division_uid" : os.getenv("MONDAY_DIVISION_UID"),
+        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST"),
+    },
+    "88429392" : { # apitest2 group
+        "team_name" : os.getenv("TUESDAY_TEAM_NAME"),
+        "division_uid" : os.getenv("TUESDAY_DIVISION_UID"),
+        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST_2")
+    }
+}
 
 def get_current_season():
     url = "https://flan1-lms-pub-api.league.ninja/nav/seasons/"
@@ -45,7 +53,7 @@ def get_next_season():
     return next_season
 
 
-def get_matches():
+def get_matches(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/schedule/"
     r = requests.get(url)
     matches = []
@@ -67,7 +75,7 @@ def get_next_match(matches):
     return next_game
 
 
-def get_standings():
+def get_standings(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/standings/"
     r = requests.get(url)
     standing = "bugging out, not sure"
@@ -77,10 +85,10 @@ def get_standings():
     return standing
 
 
-def send_message(msg):
+def send_message(msg, bot_id):
     url = "https://api.groupme.com/v3/bots/post"
     data = {
-        "bot_id": os.getenv('GROUPME_BOT_ID'),
+        "bot_id": bot_id,
         "text": msg
     }
     resp = requests.post(url, data=json.dumps(data))
@@ -120,7 +128,8 @@ def get_all_command_questions(questions_map):
     return reply
 
 
-def determine_response(message):
+def determine_response(message, team_name, division_uid):
+
     next_game_questions = [
         "hey milo whens the next game",
         "hey milo when is the next game",
@@ -209,7 +218,7 @@ def determine_response(message):
         questions_map[question] = add_question_mark(questions_map[question])
 
     if message in questions_map["next_game_questions"]:
-        matches = get_matches()
+        matches = get_matches(team_name, division_uid)
         next_match = get_next_match(matches)
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
         reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
@@ -224,7 +233,7 @@ def determine_response(message):
         return get_next_season()
 
     if message in questions_map["standings_questions"]:
-        return get_standings()
+        return get_standings(team_name, division_uid)
 
     if message in questions_map["command_questions"]:
         return get_command_questions(questions_map)
@@ -232,14 +241,16 @@ def determine_response(message):
     if message in questions_map["all_command_questions"]:
         return get_all_command_questions(questions_map)
 
-
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
-    print(data)
+
     # We don't want to reply to ourselves!
     if should_reply(data):
-        response = determine_response(data["text"].lower())
-        send_message(response)
+        division_uid = team_info[data["group_id"]]["division_uid"]
+        bot_id = team_info[data["group_id"]]["bot_id"]
+        team_name = team_info[data["group_id"]]["team_name"]
+        response = determine_response(data["text"].lower(), team_name, division_uid) # Needs group_id to figure out division
+        send_message(response, bot_id)
 
     return "OK", 200
