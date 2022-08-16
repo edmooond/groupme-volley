@@ -8,15 +8,25 @@ from flask import Flask, request
 app = Flask(__name__)
 
 team_info = {
-    "87305856" : { # apitest group
+    os.getenv("GROUP_ID_APITEST") : { # apitest group, mirrors volleybots info
         "team_name" : os.getenv("MONDAY_TEAM_NAME"),
         "division_uid" : os.getenv("MONDAY_DIVISION_UID"),
         "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST"),
     },
-    "88429392" : { # apitest2 group
+    os.getenv("GROUP_ID_APITEST2") : { # apitest2 group, mirrors dollar store athletes info
         "team_name" : os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid" : os.getenv("TUESDAY_DIVISION_UID"),
         "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST_2")
+    },
+    os.getenv("GROUP_ID_VOLLEYBOTS") : { # volleybots, monday
+        "team_name": os.getenv("MONDAY_TEAM_NAME"),
+        "division_uid": os.getenv("MONDAY_DIVISION_UID"),
+        "bot_id": os.getenv("GROUPME_BOT_ID_VOLLEYBOTS"),
+    },
+    os.getenv("GROUP_ID_DOLLAR_STORE_ATHLETES") : { # dollar store athletes, tuesday
+        "team_name": os.getenv("TUESDAY_TEAM_NAME"),
+        "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
+        "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES")
     }
 }
 
