@@ -24,11 +24,13 @@ team_info = {
         "team_name": os.getenv("MONDAY_TEAM_NAME"),
         "division_uid": os.getenv("MONDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_VOLLEYBOTS"),
+        "team_id": os.getenv("MONDAY_TEAM_ID")
     },
     os.getenv("GROUP_ID_DOLLAR_STORE_ATHLETES") : { # dollar store athletes, tuesday
         "team_name": os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
-        "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES")
+        "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES"),
+        "team_id": os.getenv("TUESDAY_TEAM_ID")
     },
     # Need to add sunday and wednesday if they ever get a groupme going
 }
@@ -76,6 +78,22 @@ def get_matches(team_name, division_uid):
                 dt_format = "%Y-%m-%d %H:%M:%S"
                 matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format) - timedelta(hours=4)) # Matches are 4 hours ahead for whatever reason
     return matches
+
+
+def check_upcoming_matches(team_id): # just a different way to check upcoming matches
+    url = f"https://flan1-lms-pub-api.league.ninja/teams/{team_id}"
+    r = requests.get(url)
+    next_game = datetime(9999, 9, 9)
+    try:
+        game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
+        dt_format = "%Y-%m-%d %H:%M:%S"
+        next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(hours=4)
+    except:
+        next_game = datetime(9999, 9, 9) # yeah, it's redundant, I just don't know if this can be empty
+    return next_game
+
+
+
 
 
 def get_next_match(matches):
@@ -140,7 +158,7 @@ def get_all_command_questions(questions_map):
     return reply
 
 
-def determine_response(message, team_name, division_uid):
+def determine_response(message, team_name, division_uid, team_id):
 
     next_game_questions = [
         "hey milo whens the next game",
@@ -241,8 +259,11 @@ def determine_response(message, team_name, division_uid):
         next_match = get_next_match(matches)
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
         reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
-        if not next_match == datetime(9999, 9, 9):
+        if next_match == datetime(9999, 9, 9):
+            next_match = check_upcoming_matches(team_id)
+        if not next_match == datetime(9999, 9, 9): # yeah this is redundant, I'll fix it later
             reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
+            
         return reply
 
     if message in questions_map["current_season_questions"]:
@@ -271,7 +292,8 @@ def webhook():
         division_uid = team_info[data["group_id"]]["division_uid"]
         bot_id = team_info[data["group_id"]]["bot_id"]
         team_name = team_info[data["group_id"]]["team_name"]
-        response = determine_response(data["text"].lower(), team_name, division_uid)
+        team_id = team_info[data["group_id"]]["team_id"]
+        response = determine_response(data["text"].lower(), team_name, division_uid, team_id)
         send_message(response, bot_id)
 
     return "OK", 200
