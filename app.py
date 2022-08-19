@@ -7,6 +7,8 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+# Triggering a rebuild count: 1
+
 team_info = {
     os.getenv("GROUP_ID_APITEST") : { # apitest group, mirrors volleybots info
         "team_name" : os.getenv("MONDAY_TEAM_NAME"),
