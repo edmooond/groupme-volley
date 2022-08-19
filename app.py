@@ -14,23 +14,25 @@ team_info = {
         "team_name" : os.getenv("MONDAY_TEAM_NAME"),
         "division_uid" : os.getenv("MONDAY_DIVISION_UID"),
         "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST"),
+        "team_id": os.getenv("MONDAY_TEAM_ID"),
     },
     os.getenv("GROUP_ID_APITEST2") : { # apitest2 group, mirrors dollar store athletes info
         "team_name" : os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid" : os.getenv("TUESDAY_DIVISION_UID"),
-        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST_2")
+        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST_2"),
+        "team_id": os.getenv("TUESDAY_TEAM_ID")
     },
     os.getenv("GROUP_ID_VOLLEYBOTS") : { # volleybots, monday
         "team_name": os.getenv("MONDAY_TEAM_NAME"),
         "division_uid": os.getenv("MONDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_VOLLEYBOTS"),
-        "team_id": os.getenv("MONDAY_TEAM_ID")
+        "team_id": os.getenv("MONDAY_TEAM_ID"),
     },
     os.getenv("GROUP_ID_DOLLAR_STORE_ATHLETES") : { # dollar store athletes, tuesday
         "team_name": os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES"),
-        "team_id": os.getenv("TUESDAY_TEAM_ID")
+        "team_id": os.getenv("TUESDAY_TEAM_ID"),
     },
     # Need to add sunday and wednesday if they ever get a groupme going
 }
