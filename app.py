@@ -98,13 +98,15 @@ def check_upcoming_matches(team_id): # just a different way to check upcoming ma
 
 
 
-def get_next_match(matches):
+def get_next_match(matches, team_id):
     today = datetime.now()
     next_game = datetime(9999, 9, 9)
     for game in matches:
         if game > today:
             if game - today < next_game - today:
                 next_game = game
+    if next_game == datetime(9999, 9, 9): 
+        next_game = check_upcoming_matches(team_id)
     return next_game
 
 
@@ -258,14 +260,11 @@ def determine_response(message, team_name, division_uid, team_id):
 
     if message in questions_map["next_game_questions"]:
         matches = get_matches(team_name, division_uid)
-        next_match = get_next_match(matches)
+        next_match = get_next_match(matches, team_id)
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
         reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
-        if next_match == datetime(9999, 9, 9):
-            next_match = check_upcoming_matches(team_id)
-        if not next_match == datetime(9999, 9, 9): # yeah this is redundant, I'll fix it later
+        if not next_match == datetime(9999, 9, 9):
             reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
-            
         return reply
 
     if message in questions_map["current_season_questions"]:
