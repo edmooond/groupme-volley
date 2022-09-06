@@ -295,7 +295,7 @@ def webhook():
         bot_id = team_info[data["group_id"]]["bot_id"]
         team_name = team_info[data["group_id"]]["team_name"]
         team_id = team_info[data["group_id"]]["team_id"]
-        response = determine_response(data["text"].lower(), team_name, division_uid, team_id)
+        response = determine_response(data["text"].lower().strip(), team_name, division_uid, team_id)
         send_message(response, bot_id)
 
     return "OK", 200
