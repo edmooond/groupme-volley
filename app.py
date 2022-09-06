@@ -281,7 +281,8 @@ def determine_response(message, team_name, division_uid, team_id):
 
     if message in questions_map["all_command_questions"]:
         return get_all_command_questions(questions_map)
-
+    
+    print("The message was: " + message)
     return "idk that command yo" # for if all those "if" statements don't go through
 
 @app.route('/', methods=['POST'])
