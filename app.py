@@ -7,28 +7,30 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-# Triggering a rebuild count: 2
-
+"""
+team_info is a map of maps containing information for each of the volleyball teams.
+The keys for the outside map are the ids for the groupme groups
+"""
 team_info = {
-    os.getenv("GROUP_ID_APITEST") : { # apitest group, mirrors volleybots info
-        "team_name" : os.getenv("MONDAY_TEAM_NAME"),
-        "division_uid" : os.getenv("MONDAY_DIVISION_UID"),
-        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST"),
+    os.getenv("GROUP_ID_APITEST"): {  # apitest group, mirrors volleybots info
+        "team_name": os.getenv("MONDAY_TEAM_NAME"),
+        "division_uid": os.getenv("MONDAY_DIVISION_UID"),
+        "bot_id": os.getenv("GROUPME_BOT_ID_API_TEST"),
         "team_id": os.getenv("MONDAY_TEAM_ID"),
     },
-    os.getenv("GROUP_ID_APITEST2") : { # apitest2 group, mirrors dollar store athletes info
-        "team_name" : os.getenv("TUESDAY_TEAM_NAME"),
-        "division_uid" : os.getenv("TUESDAY_DIVISION_UID"),
-        "bot_id" : os.getenv("GROUPME_BOT_ID_API_TEST_2"),
+    os.getenv("GROUP_ID_APITEST2"): {  # apitest2 group, mirrors dollar store athletes info
+        "team_name": os.getenv("TUESDAY_TEAM_NAME"),
+        "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
+        "bot_id": os.getenv("GROUPME_BOT_ID_API_TEST_2"),
         "team_id": os.getenv("TUESDAY_TEAM_ID")
     },
-    os.getenv("GROUP_ID_VOLLEYBOTS") : { # volleybots, monday
+    os.getenv("GROUP_ID_VOLLEYBOTS"): {  # volleybots, monday
         "team_name": os.getenv("MONDAY_TEAM_NAME"),
         "division_uid": os.getenv("MONDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_VOLLEYBOTS"),
         "team_id": os.getenv("MONDAY_TEAM_ID"),
     },
-    os.getenv("GROUP_ID_DOLLAR_STORE_ATHLETES") : { # dollar store athletes, tuesday
+    os.getenv("GROUP_ID_DOLLAR_STORE_ATHLETES"): {  # dollar store athletes, tuesday
         "team_name": os.getenv("TUESDAY_TEAM_NAME"),
         "division_uid": os.getenv("TUESDAY_DIVISION_UID"),
         "bot_id": os.getenv("GROUPME_BOT_ID_DOLLAR_STORE_ATHLETES"),
@@ -36,6 +38,7 @@ team_info = {
     },
     # Need to add sunday and wednesday if they ever get a groupme going
 }
+
 
 def get_current_season():
     url = "https://flan1-lms-pub-api.league.ninja/nav/seasons/"
@@ -70,6 +73,8 @@ def get_next_season():
     return next_season
 
 
+# Get all the upcoming matches for our team and returns a list of matches
+# This was the old way to get the next match
 def get_matches(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/schedule/"
     r = requests.get(url)
@@ -78,11 +83,13 @@ def get_matches(team_name, division_uid):
         if item["homeTeam"] and item["awayTeam"]:  # lazy null check
             if item["homeTeam"]["name"] == team_name or item["awayTeam"]["name"] == team_name:
                 dt_format = "%Y-%m-%d %H:%M:%S"
-                matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format) - timedelta(hours=4)) # Matches are 4 hours ahead for whatever reason
+                matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format) - timedelta(
+                    hours=4))  # Matches are 4 hours ahead for whatever reason
     return matches
 
 
-def check_upcoming_matches(team_id): # just a different way to check upcoming matches
+# new way to get our team's next match
+def get_upcoming_match(team_id):
     url = f"https://flan1-lms-pub-api.league.ninja/teams/{team_id}"
     r = requests.get(url)
     next_game = datetime(9999, 9, 9)
@@ -90,26 +97,26 @@ def check_upcoming_matches(team_id): # just a different way to check upcoming ma
         game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
         dt_format = "%Y-%m-%d %H:%M:%S"
         next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(hours=4)
-    except:
-        next_game = datetime(9999, 9, 9) # yeah, it's redundant, I just don't know if this can be empty
+    except IndexError:  # I think it's an index error. We'll find out at the end of the season.
+        pass  # no need to do anything
     return next_game
 
 
-
-
-
-def get_next_match(matches, team_id):
+# taking a list of our team's matches then looking for the closest one
+# old way of getting the next upcoming match
+def select_next_match(matches, team_id):
     today = datetime.now()
     next_game = datetime(9999, 9, 9)
     for game in matches:
         if game > today:
             if game - today < next_game - today:
                 next_game = game
-    if next_game == datetime(9999, 9, 9): 
+    if next_game == datetime(9999, 9, 9):
         next_game = check_upcoming_matches(team_id)
     return next_game
 
 
+# Gets the ranking for our team. Currently, it doesn't know the total number of teams in the division.
 def get_standings(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/standings/"
     r = requests.get(url)
@@ -127,6 +134,7 @@ def send_message(msg, bot_id):
         "text": msg
     }
     requests.post(url, data=json.dumps(data))
+
 
 def should_reply(data):
     if len(data["text"]) < 8:  # the length of "hey milo"
@@ -163,7 +171,6 @@ def get_all_command_questions(questions_map):
 
 
 def determine_response(message, team_name, division_uid, team_id):
-
     next_game_questions = [
         "hey milo whens the next game",
         "hey milo whens our next game",
@@ -234,17 +241,6 @@ def determine_response(message, team_name, division_uid, team_id):
         "hey milo what are ALL the commands you know",
     ]
 
-    wake_up_questions = [ # I guess these aren't really questions, haven't found a use yet so I haven't added it to the questions map
-        "hey milo wake up",
-        "hey milo wake up!",
-        "hey milo, wake up",
-        "hey milo, wake up!",
-        "hey milo are you awake",
-        "hey milo, are you awake",
-        "hey milo are you up",
-        "hey milo, are you up",
-    ]
-
     questions_map = {
         "next_game_questions": next_game_questions,
         "current_season_questions": current_season_questions,
@@ -252,19 +248,17 @@ def determine_response(message, team_name, division_uid, team_id):
         "command_questions": command_questions,
         "next_season_start_questions": next_season_start_questions,
         "all_command_questions": all_command_questions,
-        # "wake_up_questions": wake_up_questions,
     }
 
     for question in questions_map:
         questions_map[question] = add_question_mark(questions_map[question])
 
     if message in questions_map["next_game_questions"]:
-        matches = get_matches(team_name, division_uid)
-        next_match = get_next_match(matches, team_id)
+        next_match = get_upcoming_match(team_id)
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
-        reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
-        if not next_match == datetime(9999, 9, 9):
-            reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
+        reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
+        if next_match == datetime(9999, 9, 9):
+            reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
         return reply
 
     if message in questions_map["current_season_questions"]:
@@ -281,15 +275,15 @@ def determine_response(message, team_name, division_uid, team_id):
 
     if message in questions_map["all_command_questions"]:
         return get_all_command_questions(questions_map)
-    
-    print("The message was: " + message)
-    return "idk that command yo" # for if all those "if" statements don't go through
+
+    return "idk that command yo"  # for if all those "if" statements don't go through
+
 
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
 
-    # We don't want to reply to ourselves!
+    # Avoid milo bot replying to milo bot by accident
     if should_reply(data):
         division_uid = team_info[data["group_id"]]["division_uid"]
         bot_id = team_info[data["group_id"]]["bot_id"]
