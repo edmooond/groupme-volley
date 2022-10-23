@@ -74,7 +74,7 @@ def get_next_season():
 
 
 # Get all the upcoming matches for our team and returns a list of matches
-# This was the old way to get the next match
+# old way of getting the next upcoming match (in conjunction with get_next_match), replaced by get_upcoming_match.
 def get_matches(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/schedule/"
     r = requests.get(url)
@@ -97,13 +97,13 @@ def get_upcoming_match(team_id):
         game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
         dt_format = "%Y-%m-%d %H:%M:%S"
         next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(hours=4)
-    except IndexError:  # I think it's an index error. We'll find out at the end of the season.
+    except:  # Pretty sure this is supposed to catch an IndexError or KeyError on game_check, but not 100% sure.
         pass  # no need to do anything
     return next_game
 
 
 # taking a list of our team's matches then looking for the closest one
-# old way of getting the next upcoming match
+# old way of getting the next upcoming match (in conjunction with get_matches), replaced by get_upcoming_match.
 def select_next_match(matches, team_id):
     today = datetime.now()
     next_game = datetime(9999, 9, 9)
