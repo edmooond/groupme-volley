@@ -258,7 +258,7 @@ def determine_response(message, team_name, division_uid, team_id):
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
         reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
         if next_match == datetime(9999, 9, 9):
-            reply = f"No time found, probably a tournament or something. Here's the link to the schedule: {link}"
+            reply = f"No time found. Go figure it out yourself. Here's the link to the schedule: {link}"
         return reply
 
     if message in questions_map["current_season_questions"]:
