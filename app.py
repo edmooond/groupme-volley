@@ -8,9 +8,18 @@ from flask import Flask, request
 app = Flask(__name__)
 
 """
-team_info is a map of maps containing information for each of the volleyball teams.
-The keys for the outside map are the ids for the groupme groups
+TODO (in no specific order of importance): 
+1. find a way to use fewer environment variables cause it takes forever to setup
+2. split off some of these helper functions into a different file so this main file isn't so massive
+3. add functionality to display the records of the team we're playing against
+4. figure out what exception the only except clause in get_upcoming_match() is catching (currently violates PEP 8)
+5. automate deployments to lambda after main branch updates
+6. write a discord version of this bot
+7. rename some of the environment variables to reduce some confusion as to what they are
 """
+
+# team_info is a map of maps containing information for each of the volleyball teams.
+# The keys for the outside map are the ids for the GroupMe groups.
 team_info = {
     os.getenv("GROUP_ID_APITEST"): {  # apitest group, mirrors volleybots info
         "team_name": os.getenv("MONDAY_TEAM_NAME"),
@@ -96,7 +105,8 @@ def get_upcoming_match(team_id):
     try:
         game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
         dt_format = "%Y-%m-%d %H:%M:%S"
-        next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(hours=4)
+        next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(
+            hours=4)  # Matches are 4 hours ahead for whatever reason
     except:  # Pretty sure this is supposed to catch an IndexError or KeyError on game_check, but not 100% sure.
         pass  # no need to do anything
     return next_game
@@ -146,6 +156,7 @@ def should_reply(data):
         return False
 
 
+# Method just to append a question mark to all the possible questions in case someone wants to be grammatically correct
 def add_question_mark(question_array):
     temp_array = []
     for question in question_array:
@@ -154,6 +165,7 @@ def add_question_mark(question_array):
     return final_array
 
 
+# Displays one version of all the questions you can ask milo
 def get_command_questions(questions_map):
     reply = "I know the following commands: \n"
     for question in questions_map:
@@ -161,6 +173,7 @@ def get_command_questions(questions_map):
     return reply
 
 
+# Displays all the questions you can ask milo
 def get_all_command_questions(questions_map):
     reply = "Get ready for a wall of text, here's all the commands I know: \n"
     for question in questions_map:
@@ -239,6 +252,7 @@ def determine_response(message, team_name, division_uid, team_id):
 
     all_command_questions = [
         "hey milo what are ALL the commands you know",
+        "hey milo what are all the commands you know"
     ]
 
     questions_map = {
