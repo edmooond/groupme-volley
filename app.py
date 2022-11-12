@@ -105,7 +105,7 @@ def get_matches(team_name, division_uid):
             if item["homeTeam"]["name"] == team_name or item["awayTeam"]["name"] == team_name:
                 dt_format = "%Y-%m-%d %H:%M:%S"
                 matches.append(datetime.strptime(item["matchStart"].replace("T", " "), dt_format) - timedelta(
-                    hours=4))  # Matches are 4 hours ahead for whatever reason
+                    hours=3))  # Matches are 4 hours ahead for whatever reason, 3 when DST is happening (fall back).
     return matches
 
 
