@@ -118,7 +118,7 @@ def get_upcoming_match(team_id):
         game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
         dt_format = "%Y-%m-%d %H:%M:%S"
         next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(
-            hours=4)  # Matches are 4 hours ahead for whatever reason
+            hours=3)  # Matches are 4 hours ahead for whatever reason, 3 when DST is happening (fall back).
     except:  # Pretty sure this is supposed to catch an IndexError or KeyError on game_check, but not 100% sure.
         pass  # no need to do anything
     return next_game
