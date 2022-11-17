@@ -96,7 +96,7 @@ def get_next_season():
 
 # Get all the upcoming matches for our team and returns a list of matches
 # old way of getting the next upcoming match (in conjunction with get_next_match), replaced by get_upcoming_match.
-def get_matches(team_name, division_uid):
+def get_matches_list(team_name, division_uid):
     url = f"https://flan1-lms-pub-api.league.ninja/divisions/{division_uid}/schedule/"
     r = requests.get(url)
     matches = []
@@ -123,10 +123,21 @@ def get_upcoming_match(team_id):
         pass  # no need to do anything
     return next_game
 
+# new way to get our team's next match
+def get_court(team_id):
+    url = f"https://flan1-lms-pub-api.league.ninja/teams/{team_id}"
+    r = requests.get(url)
+    court = ""
+    try:
+        court_check = " on " + r.json()["Data"]["leagueInfo"]["divisionName"]
+    except:  # Pretty sure this is supposed to catch an IndexError or KeyError on game_check, but not 100% sure.
+        pass  # no need to do anything
+    return court_check
+
 
 # taking a list of our team's matches then looking for the closest one
-# old way of getting the next upcoming match (in conjunction with get_matches), replaced by get_upcoming_match.
-def select_next_match(matches, team_id):
+# old way of getting the next upcoming match (in conjunction with get_matches_list), replaced by get_upcoming_match.
+def select_next_match_from_list(matches, team_id):
     today = datetime.now()
     next_game = datetime(9999, 9, 9)
     for game in matches:
@@ -281,8 +292,9 @@ def determine_response(message, team_name, division_uid, team_id):
 
     if message in questions_map["next_game_questions"]:
         next_match = get_upcoming_match(team_id)
+        court = get_court(team_id)
         link = f"https://flannagans.league.ninja/leagues/division/{division_uid}/schedule"
-        reply = next_match.strftime("The next game is on %B %dth at %I:%M %p")
+        reply = next_match.strftime("The next game is on %B %dth at %I:%M %p") + court
         if next_match == datetime(9999, 9, 9):
             reply = f"No time found. Go figure it out yourself. Here's the link to the schedule: {link}"
         return reply
