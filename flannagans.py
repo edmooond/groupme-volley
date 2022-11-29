@@ -244,7 +244,7 @@ def determine_response(message, team_name, division_uid, team_id):
     if is_dalle_question(message):
         prompt = message[message.index(":") + 1:].strip()  # The "+1" is to get the stuff after the semi colon
         if len(prompt) > 0:  # No need for a function call if the prompt is empty
-            image_url = draw_image(prompt) + " \n btw this image goes away in hour, so you should probably save it somewhere"
+            image_url = draw_image(prompt)
         else:  # Well, well, well, you sent an empty prompt huh?
             image_url = "couldn't read your prompt, try again or ask ed(mond) to fix whatever bug is causing this"  # Might as well reuse the variable name
         return image_url
