@@ -57,6 +57,7 @@ team_info = {
     # Need to add sunday and wednesday if they ever get a groupme going
 }
 
+
 def send_message(msg, bot_id):
     url = "https://api.groupme.com/v3/bots/post"
     data = {
@@ -74,6 +75,7 @@ def should_reply(data):
         return True
     else:
         return False
+
 
 @app.route('/', methods=['POST'])
 def webhook():
