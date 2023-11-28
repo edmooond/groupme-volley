@@ -60,7 +60,7 @@ def get_upcoming_match(team_id):
         game_check = r.json()["Data"]["upcomingMatches"][0]["matchStart"]
         dt_format = "%Y-%m-%d %H:%M:%S"
         next_game = datetime.strptime(game_check.replace("T", " "), dt_format) - timedelta(
-            hours=4)  # Matches are 4 hours ahead for whatever reason, 5 when DST is happening (fall back).
+            hours=5)  # Matches are 4 hours ahead for whatever reason, 5 when DST is happening (fall back).
     except:  # Pretty sure this is supposed to catch an IndexError or KeyError on game_check, but not 100% sure.
         pass  # no need to do anything
     return next_game
@@ -203,6 +203,11 @@ def determine_response(message, team_name, division_uid, team_id):
     all_command_questions = [
         "hey milo what are ALL the commands you know",
         "hey milo what are all the commands you know"
+    ]
+
+    # TODO: hey milo are we gonna win? -> if you don't fuck it up. Maybe normalize the question and do a map
+    fun_questions = [
+        "hey milo "
     ]
 
     questions_map = {
